@@ -1,0 +1,282 @@
+{% extends './menu.html' %}
+{% load static %}
+
+{% block title %}
+    测试管理系统 | 权限列表
+{% endblock title %}
+
+{% block link %}
+    <!-- FooTable -->
+    <link href="{% static 'css/plugins/footable/footable.core.css' %}" rel="stylesheet">
+
+    <!-- Sweet Alert -->
+    <link href="{% static 'css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+
+    <link href="{% static 'bootstrap-3.3.4-dist/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet"
+          media="screen">
+    <link rel="stylesheet" href="{% static 'css/jquery.mloading.css' %}">
+{% endblock %}
+
+{% block permission_name %}权限{% endblock %}
+
+{% block permission %}权限{% endblock %}
+
+{% block search %}
+    <div class="ibox-content m-b-sm border-bottom">
+        <form class="form-horizontal">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group"><label for="menu" class="col-lg-4 control-label">菜单名称：</label>
+                        <div class="col-lg-8">
+                            <select name="menu" id="menu" class="form-control">
+                                <option selected>全部</option>
+                                {% for menu in menus %}
+                                    <option value="{{ menu.menu }}">{{ menu.menu__title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group"><label for="permission_name" class="col-lg-4 control-label">权限名称：</label>
+                        <div class="col-lg-8">
+                            <input type="text" id="permission_name" name="permission_name" value="" placeholder="权限名称"
+                                   class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group"><label for="parent_permission" class="col-lg-4 control-label">父级权限：</label>
+                        <div class="col-lg-8">
+                            <input type="text" id="parent_permission" name="parent_permission" value=""
+                                   placeholder="父级权限"
+                                   class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group"><label for="URL" class="col-lg-4 control-label">URL：</label>
+                        <div class="col-lg-8">
+                            <input type="text" id="URL" name="URL" value="" placeholder="URL"
+                                   class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="form-group"><label for="startTime" class="col-lg-2 control-label">创建时间：</label>
+                        <div class="col-lg-10">
+                            <div class="time">
+                                <div class="input-group">
+                                    <input type="text" class="form-control form_datetime" id="startTime" name="addtime"
+                                           placeholder="开始时间">
+                                    <span class="input-group-addon" id="Span2"><span class="glyphicon glyphicon-time"
+                                                                                     aria-hidden="true"></span></span>
+                                    <input type="text" class="form-control form_datetime" id="endTime" name="addtime"
+                                           placeholder="结束时间">
+                                    <span class="input-group-addon" id="Span1"><span class="glyphicon glyphicon-time"
+                                                                                     aria-hidden="true"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row">
+            <div class="col-sm-8">
+            </div>
+            <div class="col-sm-1">
+                <div class="form-group">
+                    <button type="button" onclick="parent.location.reload();"
+                            class="btn btn-sm btn-white"> 重置
+                    </button>
+                </div>
+
+            </div>
+            <div class="col-sm-1">
+                <button type="button" id="search" onclick="getList(1,{{ paginator.num_pages }})"
+                        class="btn btn-sm btn-primary"> 搜索
+                </button>
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}
+{% block add %}
+    <button type="button" onclick="window.location.href='{% url 'addpermission' %}'"
+            class="btn btn-sm btn-primary"> 新增
+    </button>
+{% endblock %}
+{% block table %}
+    <table class="footable table table-stripped toggle-arrow-tiny">
+        <thead>
+        <tr>
+            <th>权限名称</th>
+            <th data-hide="phone">url</th>
+            <th data-hide="phone">父级权限</th>
+            <th data-hide="phone">对应菜单</th>
+            <th data-hide="phone,tablet">创建时间</th>
+            <th class="text-right">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for permission in permission_list %}
+            <tr>
+                <td>
+                    {{ permission.name }}
+                </td>
+                <td>
+                    {{ permission.url }}
+                </td>
+                <td>
+                    {% if permission.parent %}
+                        {{ permission.parent.name }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </td>
+                <td>
+                    {{ permission.menu.title }}
+                </td>
+                <td>
+                    {{ permission.created_time }}
+                </td>
+                <td class="text-right">
+                    <div class="btn-group">
+                        <button id="change" class="btn-white btn btn-xs"
+                                onclick="changeData('{% url 'changepermission' permission.id %}')">
+                            修改
+                        </button>
+                        <button id="delete" class="btn-white btn btn-xs"
+                                onclick="deleteData('{% url 'deletepermission' permission.id %}')">删除
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="7">
+                <ul class="pagination pull-right">
+                    <li class="footable-page-arrow " id="first">
+                        <a data-page="first" id="first" onclick="getList(1,{{ paginator.num_pages }})">«</a>
+                    </li>
+                    <li class="footable-page-arrow ">
+                        <a data-page="prev" id="prev"
+                           onclick="getList({{ page_obj.number|add:-1 }},{{ paginator.num_pages }})">‹</a>
+                    </li>
+                    <li class="footable-page">
+                                                <span data-page="0">第 {{ page_obj.number }} 页
+                                                    共 {{ paginator.num_pages }} 页</span>
+                    </li>
+                    <li class="footable-page-arrow">
+                        <a data-page="next" id="next"
+                           onclick="getList({{ page_obj.number|add:1 }},{{ paginator.num_pages }})">›</a>
+                    </li>
+                    <li class="footable-page-arrow ">
+                        <a data-page="last" id="last"
+                           onclick="getList({{ paginator.num_pages }},{{ paginator.num_pages }})">»</a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+{% endblock %}
+{% block script %}
+    <!-- Sweet alert -->
+    <script src="{% static 'js/plugins/sweetalert/sweetalert.min.js' %}"></script>
+
+    <!-- Data picker -->
+    <script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap-datetimepicker.js' %}"
+            charset="UTF-8"></script>
+    <script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/locales/bootstrap-datetimepicker.fr.js' %}"
+            charset="UTF-8"></script>
+    <script src="{% static 'js/jquery.mloading.js' %}"></script>
+
+    <script>
+        $('.form_datetime').datetimepicker({
+            format: 'yyyy-mm-dd hh:ii:ss',
+            autoclose: true,
+            /* minView: "month",  *///选择日期后，不会再跳转去选择时分秒
+            language: 'zh-CN',
+            dateFormat: 'yyyy-mm-dd',//日期显示格式
+            timeFormat: 'HH:mm:ss',//时间显示格式
+            todayBtn: 1,
+            minView: 0,  //0表示可以选择小时、分钟   1只可以选择小时
+            minuteStep: 1,//分钟间隔1分钟
+        });
+
+        function getList(page,num_pages) {
+            $('#mainbody').mLoading();
+            var menu = $("#menu").val();
+            var permission_name = $("#permission_name").val();
+            var parent_permission = $("#parent_permission").val();
+            var url = $("#URL").val();
+            var startTime = $("#startTime").val();
+            var endTime = $("#endTime").val();
+            var data = {
+                menu: menu,
+                permission_name: permission_name,
+                parent_permission: parent_permission,
+                url: url,
+                startTime: startTime,
+                endTime: endTime
+            };
+            if (page >= 1 && page <=num_pages) {
+                return $('#mainbody').load("{% url 'permission' %}?page=" + page + " #mainbody", data);
+            }
+            else {
+                $('#mainbody').mLoading("hide");
+                return false;
+            }
+        }
+
+        function changeData(url) {
+            window.location.href = url;
+        }
+
+        function deleteData(url) {
+            swal({
+                    title: "是否确认删除？",
+                    text: "您将要删除此权限，请再次确认！",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                },
+                function (isconfirm) {
+                    if (isconfirm) {
+                        isDelete(url);
+                    }
+                }
+            );
+        }
+
+        function isDelete(url) {
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: "json",
+                success: function (result) {
+                    var success = result.success;
+                    if (success) {
+                        parent.location.reload();
+                    }
+                    else {
+                        swal("删除失败!", "您的权限可能关联有其他权限或角色数据！", "error");
+                    }
+                }
+            });
+        }
+    </script>
+
+{% endblock %}

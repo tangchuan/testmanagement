@@ -1,0 +1,198 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block title %}
+    测试管理系统 | 新增权限
+{% endblock title %}
+{% block link %}
+    <link href="{% static 'css/plugins/select2/select2.min.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>新增权限</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="/index.html">首页</a>
+                </li>
+                <li>
+                    <strong>权限列表</strong>
+                </li>
+                <li class="active">
+                    <strong>新增权限</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox-content">
+                {% if errors %}
+                    {% for error in errors %}
+                        <div class="alert alert-danger alert-dismissable">
+                            <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <form method="post" class="form-horizontal" id="form">
+                    {% csrf_token %}
+                    <div class="form-group"><label class="col-sm-2 control-label">权限名称：</label>
+                        <div class="col-sm-4">
+                            <input type="text" placeholder="请输入权限名称" name="name" value="{{ permission_detail.name }}"
+                                   class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                {% if not permission_detail %}
+                    <div class="form-group"><label for="type" class="col-sm-2 control-label">权限类型：</label>
+                        <div class="col-md-4">
+                            <select class="select2_type form-control" name="type" id="type">
+                                <option value="1" selected>功能权限</option>
+                                <option value="2">按钮权限</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                {% else %}
+                    <div class="form-group"><label for="type" class="col-sm-2 control-label">权限类型：</label>
+                        <div class="col-md-4">
+                            <select class="select2_type form-control" name="type" id="type" >
+                                {% if not permission_detail.parent %}
+                                    <option value="1" selected>功能权限</option>
+                                {% else %}
+                                    <option value="2" selected>按钮权限</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                {% endif %}
+                    <div class="form-group"><label class="col-sm-2 control-label">URL：</label>
+                        <div class="col-sm-4">
+                            <input type="text" placeholder="请输入URL地址" class="form-control" name="url"
+                                   value="{{ permission_detail.url }}"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group"><label for="menu" class="col-sm-2 control-label">对应菜单：</label>
+                        <div class="col-md-4" aria-required="true">
+                            <select class="select2_menu form-control" name="menu" id="menu"
+                                    {% if permission_detail.parent%}disabled{% endif %}>
+                                <option></option>
+                                {% for menu in menus %}
+                                    {% ifequal menu permission_detail.menu%}
+                                        <option value="{{ menu.id }}" selected>{{ menu.title }}</option>
+                                    {% else %}
+                                        <option value="{{ menu.id }}">{{ menu.title }}</option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <label id="menu-error" style="margin-top: 6px;color: #cc5965;visibility: hidden;">这是必填字段</label>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group"><label for="parent" class="col-sm-2 control-label">父级权限：</label>
+                        <div class="col-md-4">
+                            <select class="select2_permission form-control" name="parent" id="parent"
+                                    {% if not permission_detail.parent %}disabled="disabled"{% endif %}>
+                                <option></option>
+                                {% for permission in permissions %}
+                                    {% ifequal permission permission_detail.parent%}
+                                        <option value="{{ permission.id }}" selected>{{ permission.name }}</option>
+                                    {% else %}
+                                        <option value="{{ permission.id }}">{{ permission.name }}</option>
+                                    {% endifequal %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <div class="col-sm-4 col-sm-offset-2">
+                            <button class="btn btn-white" type="button" id="cancel" style="margin-right: 30px">返回
+                            </button>
+                            <button class="btn btn-primary" type="submit" id="submit">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+{% endblock content %}
+{% block script %}
+    <!-- Jquery Validate -->
+    <script src="{% static 'js/plugins/validate/jquery.validate.min.js' %}"></script>
+    <!-- Select2 -->
+    <script src="{% static 'js/plugins/select2/select2.full.min.js' %}"></script>
+
+    <script>
+        $(".select2_type").select2();
+        $(".select2_permission").select2({
+            placeholder: "请选择一个权限",
+            allowClear: true
+        });
+        $(".select2_menu").select2({
+            placeholder: "请选择一个菜单",
+            allowClear: true
+        });
+        $(document).ready(function () {
+            $("#form").validate({
+                rules: {
+                    name: {
+                        required: true,
+                        maxlength: 6
+                    },
+                    url: {
+                        required: true,
+                        rangelength: [2, 300],
+                    }
+                }
+            });
+        });
+        $(document).ready(function () {
+            $("#cancel").click(function () {
+                history.go(-1);
+            })
+        });
+        $("#menu").change(function () {
+            var menu = $("#menu").val();
+            if (menu === '') {
+                document.getElementById("menu-error").style.visibility = "visible";
+            }
+            else {
+                document.getElementById("menu-error").style.visibility = "hidden";
+            }
+        });
+        $("#form").submit(function () {
+            var menu = $("#menu").val();
+            var type = $("#type").val();
+            if (type!=='2' && menu === '') {
+                document.getElementById("menu-error").style.visibility = "visible";
+                return false;
+            }
+        });
+        $("#type").change(function () {
+            var type = $("#type").val();
+            var parent = $("#parent");
+            var menu = $("#menu");
+            if (type === '1') {
+                parent.select2('val','');
+                parent.attr("disabled",true);
+                menu.attr("disabled",false);
+            }
+            else if(type==='2') {
+                parent.attr("disabled",false);
+                menu.select2('val','');
+                document.getElementById("menu-error").style.visibility = "hidden";
+                menu.attr("disabled",true);
+            }
+        });
+    </script>
+
+{% endblock %}

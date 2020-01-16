@@ -1,0 +1,319 @@
+{% extends './menu.html' %}
+{% load static %}
+
+{% block title %}
+    测试管理系统 | 用户列表
+{% endblock title %}
+
+{% block link %}
+    <!-- FooTable -->
+    <link href="{% static 'css/plugins/footable/footable.core.css' %}" rel="stylesheet">
+
+    <!-- Sweet Alert -->
+    <link href="{% static 'css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+
+    <link href="{% static 'bootstrap-3.3.4-dist/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet"
+          media="screen">
+    <link rel="stylesheet" href="{% static 'css/jquery.mloading.css' %}">
+{% endblock %}
+
+{% block permission_name %}用户列表{% endblock %}
+
+{% block permission %}用户管理{% endblock %}
+
+{% block search %}
+    <div class="ibox-content m-b-sm border-bottom">
+        <form class="form-horizontal">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group"><label for="role" class="col-lg-4 control-label">角色名称：</label>
+                        <div class="col-lg-8">
+                            <select name="role" id="role" class="form-control">
+                                <option selected>全部</option>
+                                {% for role in roles %}
+                                    <option value="{{ role.role }}">{{ role.role__title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group"><label for="username" class="col-lg-4 control-label">用户账号：</label>
+                        <div class="col-lg-8">
+                            <input type="text" id="username" name="username" value="" placeholder="用户账号"
+                                   class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-group"><label for="realname" class="col-lg-4 control-label">真实姓名：</label>
+                        <div class="col-lg-8">
+                            <input type="text" id="realname" name="realname" value=""
+                                   placeholder="真实姓名"
+                                   class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="form-group"><label for="phone" class="col-lg-4 control-label">联系电话：</label>
+                        <div class="col-lg-8">
+                            <input type="text" id="phone" name="phone" value="" placeholder="联系电话"
+                                   class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="form-group"><label for="startTime" class="col-lg-2 control-label">创建时间：</label>
+                        <div class="col-lg-10">
+                            <div class="time">
+                                <div class="input-group">
+                                    <input type="text" class="form-control form_datetime" id="startTime" name="addtime"
+                                           placeholder="开始时间">
+                                    <span class="input-group-addon" id="Span2"><span class="glyphicon glyphicon-time"
+                                                                                     aria-hidden="true"></span></span>
+                                    <input type="text" class="form-control form_datetime" id="endTime" name="addtime"
+                                           placeholder="结束时间">
+                                    <span class="input-group-addon" id="Span1"><span class="glyphicon glyphicon-time"
+                                                                                     aria-hidden="true"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row">
+            <div class="col-sm-8">
+            </div>
+            <div class="col-sm-1">
+                <div class="form-group">
+                    <button type="button" onclick="parent.location.reload();"
+                            class="btn btn-sm btn-white"> 重置
+                    </button>
+                </div>
+
+            </div>
+            <div class="col-sm-1">
+                <button type="button" id="search" onclick="getList(1,{{ paginator.num_pages }})"
+                        class="btn btn-sm btn-primary"> 搜索
+                </button>
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}
+{% block add %}
+    <button type="button" onclick="window.location.href='{% url 'adduser' %}'"
+            class="btn btn-sm btn-primary"> 新增
+    </button>
+{% endblock %}
+{% block table %}
+    <table class="footable table table-stripped toggle-arrow-tiny">
+        <thead>
+        <tr>
+            <th>用户账号</th>
+            <th data-hide="phone">邮箱</th>
+            <th data-hide="phone">真实姓名</th>
+            <th data-hide="phone">联系电话</th>
+            <th data-hide="phone,tablet">创建时间</th>
+            <th class="text-right">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in user_list %}
+            <tr>
+                <td>
+                    <a href="{% url 'readuser' user.id %}">{{ user.username }}</a>
+                </td>
+                <td>
+                    {{ user.email }}
+                </td>
+                <td>
+                    {{ user.realname }}
+                </td>
+                <td>
+                    {{ user.phone }}
+                </td>
+                <td>
+                    {{ user.created_time }}
+                </td>
+                <td class="text-right">
+                    <div class="btn-group">
+                        <button id="reset" class="btn-white btn btn-xs"
+                            onclick="resetUser('{% url 'resetuser' user.id %}')">密码重置
+                        </button>
+                        <button id="change" class="btn-white btn btn-xs"
+                                onclick="changeData('{% url 'changeuser' user.id %}')">
+                            修改
+                        </button>
+                        <button id="delete" class="btn-white btn btn-xs"
+                            onclick="deleteData('{% url 'deleteuser' user.id %}')">删除
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="7">
+                <ul class="pagination pull-right">
+                    <li class="footable-page-arrow " id="first">
+                        <a data-page="first" id="first" onclick="getList(1,{{ paginator.num_pages }})">«</a>
+                    </li>
+                    <li class="footable-page-arrow ">
+                        <a data-page="prev" id="prev"
+                           onclick="getList({{ page_obj.number|add:-1 }},{{ paginator.num_pages }})">‹</a>
+                    </li>
+                    <li class="footable-page">
+                                                <span data-page="0">第 {{ page_obj.number }} 页
+                                                    共 {{ paginator.num_pages }} 页</span>
+                    </li>
+                    <li class="footable-page-arrow">
+                        <a data-page="next" id="next"
+                           onclick="getList({{ page_obj.number|add:1 }},{{ paginator.num_pages }})">›</a>
+                    </li>
+                    <li class="footable-page-arrow ">
+                        <a data-page="last" id="last"
+                           onclick="getList({{ paginator.num_pages }},{{ paginator.num_pages }})">»</a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+{% endblock %}
+{% block script %}
+    <!-- Sweet alert -->
+    <script src="{% static 'js/plugins/sweetalert/sweetalert.min.js' %}"></script>
+
+    <!-- Data picker -->
+    <script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/bootstrap-datetimepicker.js' %}"
+            charset="UTF-8"></script>
+    <script type="text/javascript" src="{% static 'bootstrap-3.3.4-dist/js/locales/bootstrap-datetimepicker.fr.js' %}"
+            charset="UTF-8"></script>
+    <script src="{% static 'js/jquery.mloading.js' %}"></script>
+
+    <script>
+        $('.form_datetime').datetimepicker({
+            format: 'yyyy-mm-dd hh:ii:ss',
+            autoclose: true,
+            /* minView: "month",  *///选择日期后，不会再跳转去选择时分秒
+            language: 'zh-CN',
+            dateFormat: 'yyyy-mm-dd',//日期显示格式
+            timeFormat: 'HH:mm:ss',//时间显示格式
+            todayBtn: 1,
+            minView: 0,  //0表示可以选择小时、分钟   1只可以选择小时
+            minuteStep: 1,//分钟间隔1分钟
+        });
+
+        function getList(page,num_pages) {
+            $('#mainbody').mLoading();
+            var role = $("#role").val();
+            var username = $("#username").val();
+            var realname = $("#realname").val();
+            var phone = $("#phone").val();
+            var startTime = $("#startTime").val();
+            var endTime = $("#endTime").val();
+            var data = {
+                role: role,
+                username: username,
+                realname: realname,
+                phone: phone,
+                startTime: startTime,
+                endTime: endTime
+            };
+            if (page >= 1 && page <=num_pages) {
+                $('#mainbody').load("{% url 'user' %}?page=" + page + " #mainbody", data);
+                return true;
+            }
+            else {
+                $('#mainbody').mLoading("hide");
+                return false;
+            }
+        }
+
+        function changeData(url) {
+            window.location.href = url;
+        }
+
+        function deleteData(url) {
+            swal({
+                    title: "是否确认删除？",
+                    text: "您将要删除此用户，请再次确认！",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                },
+                function (isconfirm) {
+                    if (isconfirm) {
+                        isDelete(url);
+                    }
+                }
+            );
+        }
+
+        function isDelete(url) {
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: "json",
+                success: function (result) {
+                    var success = result.success;
+                    if (success) {
+                        parent.location.reload();
+                    }
+                    else {
+                        swal("删除失败!", "您的用户删除失败！", "error");
+                    }
+                }
+            });
+        }
+
+        function resetUser(url) {
+            swal({
+                    title: "是否确认重置密码？",
+                    text: "您将要重置该用户的密码，密码重置后默认密码为：123456，请再次确认！",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                },
+                function (isconfirm) {
+                    if (isconfirm) {
+                        isReset(url);
+                    }
+                }
+            );
+        }
+
+        function isReset(url) {
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: "json",
+                success: function (result) {
+                    var success = result.success;
+                    if (success) {
+                        parent.location.reload();
+                    }
+                    else {
+                        swal("重置失败!", "您的密码重置失败！", "error");
+                    }
+                }
+            });
+        }
+    </script>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>测试管理系统 | 登录</title>
+
+    <link rel="stylesheet" href="{% static 'bootstrap-3.3.4-dist/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.css' %}">
+
+    <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+
+    <div class="middle-box text-center loginscreen animated fadeInDown">
+        <div>
+            <div>
+
+                <h1 class="logo-name">DL</h1>
+
+            </div>
+            <h3>测试管理系统</h3>
+            <form class="m-t" role="form" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" class="form-control"  name="username" value="{{ username }}"
+                           placeholder="请输入账号" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" name="password"
+                           placeholder="请输入密码" required>
+                </div>
+                <p style="color: red;" class="text-left">{{ error }}</p>
+                <button type="submit" class="btn btn-primary block full-width m-b">登录</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mainly scripts -->
+    <script src="{% static 'js/jquery-2.1.1.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,171 @@
+{% extends './menu.html' %}
+{% load static %}
+
+{% block title %}
+    测试管理系统 | 角色
+{% endblock title %}
+
+{% block link %}
+    <!-- FooTable -->
+    <link href="{% static 'css/plugins/footable/footable.core.css' %}" rel="stylesheet">
+
+    <!-- Sweet Alert -->
+    <link href="{% static 'css/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/jquery.mloading.css' %}">
+{% endblock %}
+
+{% block permission_name %}角色{% endblock %}
+
+{% block permission %}角色{% endblock %}
+
+{% block search %}
+    <div class="ibox-content m-b-sm border-bottom">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="input-group">
+                    <input type="search" id="keyword" name="keyword" placeholder="角色名称"
+                           class="input-sm form-control">
+                    <span class="input-group-btn">
+                        <button type="button" id="search" onclick="getList(1,{{ paginator.num_pages }})"
+                                class="btn btn-sm btn-primary"> 搜索</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block add %}
+    <button type="button" onclick="window.location.href='{% url 'addrole' %}'"
+            class="btn btn-sm btn-primary"> 新增
+    </button>
+{% endblock %}
+{% block table %}
+    <table class="footable table table-stripped toggle-arrow-tiny">
+        <thead>
+        <tr>
+            <th>角色名称</th>
+            <th data-hide="phone,tablet">创建时间</th>
+            <th class="text-right">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for role in role_list %}
+            <tr>
+                <td>
+                    <a href="{% url 'readrole' role.id %}">{{ role.title }}</a>
+                </td>
+                <td>
+                    {{ role.created_time }}
+                </td>
+                <td class="text-right">
+                    <div class="btn-group">
+                        <button id="change" class="btn-white btn btn-xs"
+                            onclick="changeData('{% url 'changerole' role.id %}')">
+                            修改
+                        </button>
+                        <button id="delete" class="btn-white btn btn-xs"
+                            onclick="deleteData('{% url 'deleterole' role.id %}')">删除
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="7">
+                <ul class="pagination pull-right">
+                    <li class="footable-page-arrow " id="first">
+                        <a data-page="first" id="first" onclick="getList(1,{{ paginator.num_pages }})">«</a>
+                    </li>
+                    <li class="footable-page-arrow ">
+                        <a data-page="prev" id="prev"
+                           onclick="getList({{ page_obj.number|add:-1 }},{{ paginator.num_pages }})">‹</a>
+                    </li>
+                    <li class="footable-page">
+                                                <span data-page="0">第 {{ page_obj.number }} 页
+                                                    共 {{ paginator.num_pages }} 页</span>
+                    </li>
+                    <li class="footable-page-arrow">
+                        <a data-page="next" id="next"
+                           onclick="getList({{ page_obj.number|add:1 }},{{ paginator.num_pages }})">›</a>
+                    </li>
+                    <li class="footable-page-arrow ">
+                        <a data-page="last" id="last"
+                           onclick="getList({{ paginator.num_pages }},{{ paginator.num_pages }})">»</a>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+{% endblock %}
+{% block script %}
+    <!-- Sweet alert -->
+    <script src="{% static 'js/plugins/sweetalert/sweetalert.min.js' %}"></script>
+
+    <script src="{% static 'js/jquery.mloading.js' %}"></script>
+
+    <script>
+
+        function getList(page, num_pages) {
+            $('#mainbody').mLoading();
+            var keyword = $("#keyword").val();
+            var data = {
+                keyword: keyword,
+            };
+            if (page >= 1 && page <=num_pages) {
+                return $('#mainbody').load("{% url 'role' %}?page=" + page + " #mainbody", data);
+            }
+            else {
+                $('#mainbody').mLoading("hide");
+                return false;
+            }
+        }
+
+        function changeData(url) {
+            window.location.href = url;
+        }
+
+        function deleteData(url) {
+            swal({
+                    title: "是否确认删除？",
+                    text: "您将要删除此角色，请再次确认！",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    closeOnConfirm: false,
+                    closeOnCancel: true,
+                },
+                function (isconfirm) {
+                    if (isconfirm) {
+                        isDelete(url);
+                    }
+                }
+            );
+        }
+
+        function isDelete(url) {
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: "json",
+                success: function (result) {
+                    var success = result.success;
+                    if (success===1) {
+                        parent.location.reload();
+                    }
+                    else if(success===0){
+                        swal("删除失败!", "您的角色可能关联有用户数据！", "error");
+                    }
+                    else {
+                        window.location.href="{% url 'login' %}"
+                    }
+                }
+            });
+        }
+    </script>
+
+{% endblock %}

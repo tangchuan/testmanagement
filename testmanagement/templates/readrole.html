@@ -1,0 +1,214 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block title %}
+    测试管理系统 | 查看角色
+{% endblock title %}
+{% block link %}
+    <link href="{% static 'css/zx.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>查看角色</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="/index.html">首页</a>
+                </li>
+                <li>
+                    <strong>角色列表</strong>
+                </li>
+                <li class="active">
+                    <strong>查看角色</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="ibox-content">
+                <form method="post" class="form-horizontal" id="form">
+                    <div class="form-group"><label class="col-sm-2 control-label">角色名称：</label>
+                        <div class="col-sm-4">
+                            <input type="text"  id="name" name="name"
+                                   value="{{ role_detail.title }}"
+                                   class="form-control" readonly>
+                            <div id="permission-error" style="color: #cc5965;"></div>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group"><label class="col-sm-2 control-label">权限：</label>
+                        <div class="col-sm-4">
+                            <div id="treeview-checkable" class=""></div>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <div class="col-sm-4 col-sm-offset-3">
+                            <button class="btn btn-white" type="button" id="cancel">确定</button>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+{% endblock content %}
+{% block script %}
+    <script src="{% static 'js/bootstrap-treeview.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#cancel").click(function () {
+                history.go(-1);
+            })
+        });
+    </script>
+    <script>
+        var defaultData = [
+            {% for menu in tree.values %}
+                {
+                    "menu_id": {{ menu.menu_id }},
+                    "text": "{{ menu.menu_title }}",
+                    selectable: false,
+                    "state": {
+                        expanded: true,
+                        {% if menu.checkable %}
+                            checked:true,
+                        {% endif %}
+                    },
+                    {% if menu.children %}
+                        "nodes": [
+                            {% for permission in menu.children %}
+                                {
+                                    "permission_id": {{ permission.permission_id }},
+                                    "text": "{{ permission.permission_name }}",
+                                    selectable: false,
+                                    "state": {
+                                        expanded: true,
+                                        {% if permission.checkable %}
+                                            checked:true,
+                                        {% endif %}
+                                    },
+                                    {% if permission.children %}
+                                        "nodes": [
+                                            {% for value in permission.children %}
+                                                {
+                                                    "permission_id": {{ value.permission_id }},
+                                                    "text": "{{ value.permission_name }}",
+                                                    selectable: false,
+                                                    "state": {
+                                                        expanded: true,
+                                                        {% if value.checkable %}
+                                                            checked:true,
+                                                        {% endif %}
+                                                    },
+                                                },
+                                            {% endfor %}
+                                        ],
+                                    {% endif %}
+                                },
+                            {% endfor %}
+                        ],
+                    {% endif %}
+                },
+            {% endfor %}
+
+        ];
+
+        var $checkableTree = $('#treeview-checkable').treeview({
+            data: defaultData,
+            showIcon: false,
+            showCheckbox: true,
+            selectedBackColor: '#FFFFFF',
+            selectedColor: '#000000',
+            onNodeChecked: function (event, node) {
+                $('#treeview-checkable').treeview('toggleNodeChecked', [ data.nodeId, { silent: true } ]);
+            },
+            onNodeUnchecked: function (event, node) {
+                $('#treeview-checkable').treeview('toggleNodeChecked', [ data.nodeId, { silent: true } ]);
+            }
+
+        });
+
+        var nodeCheckedSilent = false;
+
+        function nodeChecked(event, node) {
+            if (nodeCheckedSilent) {
+                return;
+            }
+            nodeCheckedSilent = true;
+            checkAllParent(node);
+            checkAllSon(node);
+            nodeCheckedSilent = false;
+        }
+
+        var nodeUncheckedSilent = false;
+
+        function nodeUnchecked(event, node) {
+            if (nodeUncheckedSilent)
+                return;
+            nodeUncheckedSilent = true;
+            uncheckAllParent(node);
+            uncheckAllSon(node);
+            nodeUncheckedSilent = false;
+        }
+
+        //选中全部父节点
+        function checkAllParent(node) {
+            $('#treeview-checkable').treeview('checkNode', node.nodeId, {silent: true});
+            var parentNode = $('#treeview-checkable').treeview('getParent', node.nodeId);
+            if (!("nodeId" in parentNode)) {
+                return;
+            } else {
+                checkAllParent(parentNode);
+            }
+        }
+
+        //取消全部父节点
+        function uncheckAllParent(node) {
+            $('#treeview-checkable').treeview('uncheckNode', node.nodeId, {silent: true});
+            var siblings = $('#treeview-checkable').treeview('getSiblings', node.nodeId);
+            var parentNode = $('#treeview-checkable').treeview('getParent', node.nodeId);
+            if (!("nodeId" in parentNode)) {
+                return;
+            }
+            var isAllUnchecked = true;  //是否全部没选中
+            for (var i in siblings) {
+                if (siblings[i].state.checked) {
+                    isAllUnchecked = false;
+                    break;
+                }
+            }
+            if (isAllUnchecked) {
+                uncheckAllParent(parentNode);
+            }
+
+        }
+
+        //级联选中所有子节点
+        function checkAllSon(node) {
+            $('#treeview-checkable').treeview('checkNode', node.nodeId, {silent: true});
+            if (node.nodes != null && node.nodes.length > 0) {
+                for (var i in node.nodes) {
+                    checkAllSon(node.nodes[i]);
+                }
+            }
+        }
+
+        //级联取消所有子节点
+        function uncheckAllSon(node) {
+            $('#treeview-checkable').treeview('uncheckNode', node.nodeId, {silent: true});
+            if (node.nodes != null && node.nodes.length > 0) {
+                for (var i in node.nodes) {
+                    uncheckAllSon(node.nodes[i]);
+                }
+            }
+        }
+    </script>
+
+{% endblock %}
