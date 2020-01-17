@@ -18,7 +18,7 @@ class User(models.Model):
         (STATUS_DELETE, '删除'),
     )
     username = models.CharField(verbose_name='用户名',max_length=32, unique=True)
-    password = models.CharField(verbose_name='密码',max_length=64)
+    password = models.CharField(verbose_name='密码',max_length=128)
     email = models.CharField(verbose_name='邮箱',max_length=32)
     realname = models.CharField(verbose_name='姓名', max_length=150,default='name')
     phone = models.CharField(max_length=11, null=True, unique=True)

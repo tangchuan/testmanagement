@@ -208,6 +208,7 @@ class ResetUser(CommonViewMixin,TemplateView):
         if user:
             reset_password='123456'
             password = make_password(reset_password)
+            print(password)
             User.user_list().filter(id = user_id).update(
                 password = password
             )
