@@ -6,9 +6,13 @@ from .base import *  # NOQA
 
 DEBUG = True
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'testmanagement',    #你的数据库名称
+        'USER': 'root',   #你的数据库用户名
+        'PASSWORD': '123456', #你的数据库密码
+        'HOST': '', #你的数据库主机，留空默认为localhost
+        'PORT': '3306', #你的数据库端口
+    }
+}
