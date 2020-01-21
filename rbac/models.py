@@ -134,7 +134,7 @@ class Permission(models.Model):
 
     @classmethod
     def get_by_menus(cls):
-        return cls.objects.filter(status=cls.STATUS_NORMAL).values('menu','menu__title').order_by('menu__title').distinct()
+        return cls.objects.filter(status=cls.STATUS_NORMAL,parent=None).values('menu','menu__title').order_by('menu__title').distinct()
 
     @staticmethod
     def get_permission_by_id(id):
