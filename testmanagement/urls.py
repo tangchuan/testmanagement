@@ -13,8 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
+from django.urls import include
+
 from rbac.views.indexView import Index, UserInfo, PasswordChange
 from rbac.views.loginView import Login, Logout
 from rbac.views.menuView import Menus, AddMenu, ChangeMenu, DeleteMenu
@@ -50,3 +53,9 @@ urlpatterns = [
     url(r'^user/read/(?P<user_id>\d+).html$', ReadUser.as_view(), name='readuser'),
     url(r'admin/', admin.site.urls),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

@@ -133,5 +133,6 @@ WHITE_URL_LIST = [
     r'^/login.html$',
     r'^/passwordchange.html$',
     r'^/userinfo.html$',
-    r'^/index.html'
+    r'^/index.html',
+    r'^/__debug__'
 ]
