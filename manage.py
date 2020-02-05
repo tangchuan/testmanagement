@@ -5,7 +5,7 @@ import sys
 
 
 def main():
-    profile = os.environ.get('TESTMANAGEMENT_PROFILE', 'develop')
+    profile = os.environ.get('TESTMANAGEMENT_PROFILE', 'product')
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "testmanagement.settings.%s" % profile)
     try:
         from django.core.management import execute_from_command_line

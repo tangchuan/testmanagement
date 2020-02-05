@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = ')+u5y5(2u6bo@d%1rz4p#n49axxi@_$zf0b!_wf-f5wchqxf_@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -48,7 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'rbac.middlewares.permission.PermissionMiddleware',  # 配置验证用户和用户权限的中间件
+    # 'rbac.middlewares.permission.PermissionMiddleware',  # 配置验证用户和用户权限的中间件
 ]
 
 ROOT_URLCONF = 'testmanagement.urls'
