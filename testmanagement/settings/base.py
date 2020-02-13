@@ -48,7 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'rbac.middlewares.permission.PermissionMiddleware',  # 配置验证用户和用户权限的中间件
+    'rbac.middlewares.permission.PermissionMiddleware',  # 配置验证用户和用户权限的中间件
 ]
 
 ROOT_URLCONF = 'testmanagement.urls'
@@ -121,7 +121,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
+# STATIC_ROOT = 'E:/workspace/testmanagement/testmanagement/testmanagement/static'
+STATIC_ROOT='static'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
