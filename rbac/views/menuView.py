@@ -14,7 +14,7 @@ class Menus(CommonViewMixin, ListView):
     queryset = Menu.menu_list()
     paginate_by = 10
     context_object_name = 'menu_list'
-    template_name = 'menu.html'
+    template_name = 'menu/menu.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -37,7 +37,7 @@ class Menus(CommonViewMixin, ListView):
 #新增菜单
 class AddMenu(CommonViewMixin,TemplateView):
     # http_method_names = ['post']
-    template_name = 'addmenu.html'
+    template_name = 'menu/addmenu.html'
 
     def post(self, request, *args, **kwargs):
         errors = []
@@ -60,7 +60,7 @@ class AddMenu(CommonViewMixin,TemplateView):
                 context.update({
                     'errors': errors,
                 })
-                return render(request, "addmenu.html", context=context)
+                return render(request, "menu/addmenu.html", context=context)
             else:
                 Menu.objects.create(title=title,icon=icon,priority=priority)
                 return redirect('menu')
@@ -72,7 +72,7 @@ class AddMenu(CommonViewMixin,TemplateView):
 class ChangeMenu(CommonViewMixin,DetailView):
     # http_method_names = ['post']
     queryset = Menu.menu_list()
-    template_name = 'addmenu.html'
+    template_name = 'menu/addmenu.html'
     context_object_name = 'menu'
     pk_url_kwarg = 'menu_id'
 
@@ -104,7 +104,7 @@ class ChangeMenu(CommonViewMixin,DetailView):
                     'menu':menu,
                     'errors': errors,
                 })
-                return render(request, "addmenu.html", context=context)
+                return render(request, "menu/addmenu.html", context=context)
             else:
                 Menu.objects.filter(status=Menu.STATUS_NORMAL, id=menu_id).update(
                     title=title,

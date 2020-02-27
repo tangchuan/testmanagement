@@ -1,19 +1,19 @@
-{% extends './base.html' %}
+{% extends 'base/base.html' %}
 {% load static %}
 
 {% block title %}
-    测试管理系统 | 用户信息
+    测试管理系统 | 修改密码
 {% endblock title %}
 {% block content %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>用户信息</h2>
+            <h2>修改密码</h2>
             <ol class="breadcrumb">
                 <li>
-                    <a href="index.html">首页</a>
+                    <a href="index/index.html">首页</a>
                 </li>
                 <li class="active">
-                    <strong>用户信息</strong>
+                    <strong>修改密码</strong>
                 </li>
             </ol>
         </div>
@@ -40,25 +40,20 @@
                 {% endif %}
                 <form method="post" class="form-horizontal" id="form">
                     {% csrf_token %}
-                    <div class="form-group"><label class="col-sm-2 control-label">用户名</label>
+                    <div class="form-group"><label class="col-sm-2 control-label">原密码</label>
                         <div class="col-sm-4">
-                             <input type="text" readonly="readonly" name="username" value="{{ username }}" class="form-control" required>
+                             <input type="password"  name="oldpassword" placeholder="请输入您的密码"  class="form-control" required>
                         </div>
                     </div>
                     <div class="hr-line-dashed"></div>
-                    <div class="form-group"><label class="col-sm-2 control-label">邮箱</label>
+                    <div class="form-group"><label class="col-sm-2 control-label">新密码</label>
                         <div class="col-sm-4">
-                            <input type="email" placeholder="请输入邮箱" class="form-control" name="email" value="{{ email }}" required>
+                            <input type="password" name="newpassword" placeholder="请输入您的新密码" class="form-control"  required>
                         </div>
                     </div>
-                    <div class="form-group"><label class="col-sm-2 control-label">姓名</label>
+                    <div class="form-group"><label class="col-sm-2 control-label">确认密码</label>
                         <div class="col-sm-4">
-                            <input type="text" placeholder="请输入姓名" class="form-control" name="realname" value="{{ realname }}" required>
-                        </div>
-                    </div>
-                    <div class="form-group"><label class="col-sm-2 control-label">手机号</label>
-                        <div class="col-sm-4">
-                            <input type="text" placeholder="请输入手机号" class="form-control" name="phone" value="{{ phone }}">
+                            <input type="password" name="confirmpassword" placeholder="请再次输入您的新密码" class="form-control" required>
                         </div>
                     </div>
                     <div class="hr-line-dashed"></div>
@@ -81,18 +76,17 @@
         $(document).ready(function(){
             $("#form").validate({
                 rules: {
-                    email: {
+                    oldpassword: {
                         required: true,
-                        email: true,
-                        maxlength: 32
+                        rangelength: [6,64]
                     },
-                    realname: {
+                    newpassword: {
                         required: true,
-                        rangelength:[2,20],
+                        rangelength: [6,64]
                     },
-                    phone: {
-                        number: true,
-                        maxlength: 11
+                    confirmpassword: {
+                        required: true,
+                        rangelength: [6,64]
                     }
                 }
             });

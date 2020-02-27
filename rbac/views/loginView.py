@@ -11,7 +11,7 @@ from rbac.service import init_permission
 
 
 class Login(TemplateView):
-    template_name = "login.html"
+    template_name = "login/login.html"
 
     def post(self, request):
         data = request.POST
@@ -31,7 +31,7 @@ class Login(TemplateView):
             else:
                 error = '密码不正确'
         contex = {'error':error, 'username':username}
-        return render(request, 'login.html', context=contex)
+        return render(request, 'login/login.html', context=contex)
 
 
 class Logout(View):

@@ -13,7 +13,7 @@ class Permissions(CommonViewMixin, ListView):
     queryset = Permission.permission_list()
     paginate_by = 10
     context_object_name = 'permission_list'
-    template_name = 'permission.html'
+    template_name = 'permission/permission.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -52,7 +52,7 @@ class Permissions(CommonViewMixin, ListView):
 #新增权限
 class AddPermission(CommonViewMixin,TemplateView):
     # http_method_names = ['post']
-    template_name = 'addpermission.html'
+    template_name = 'permission/addpermission.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -99,7 +99,7 @@ class AddPermission(CommonViewMixin,TemplateView):
                 context.update({
                     'errors': errors,
                 })
-                return render(request, "addpermission.html", context=context)
+                return render(request, "permission/addpermission.html", context=context)
             else:
                 Permission.objects.create(name=name,url=url,parent=parent,menu=menu)
                 return redirect('permission')
@@ -110,7 +110,7 @@ class AddPermission(CommonViewMixin,TemplateView):
 #修改权限
 class ChangePermission(CommonViewMixin,DetailView):
     queryset = Permission.permission_list()
-    template_name = 'addpermission.html'
+    template_name = 'permission/addpermission.html'
     context_object_name = 'permission_detail'
     pk_url_kwarg = 'permission_id'
 
@@ -168,7 +168,7 @@ class ChangePermission(CommonViewMixin,DetailView):
                     'permission_detail':permission_detail,
                     'errors': errors,
                 })
-                return render(request, "addpermission.html", context=context)
+                return render(request, "permission/addpermission.html", context=context)
             else:
                 Permission.objects.filter(status=Permission.STATUS_NORMAL, id=permission_id).update(
                     name=name,

@@ -13,7 +13,7 @@ class Roles(CommonViewMixin, ListView):
     queryset = Role.role_list()
     paginate_by = 10
     context_object_name = 'role_list'
-    template_name = 'role.html'
+    template_name = 'role/role.html'
 
     def get_queryset(self):
         queryset = self.queryset
@@ -29,7 +29,7 @@ class Roles(CommonViewMixin, ListView):
 #新增角色
 class AddRole(CommonViewMixin,TemplateView):
     # http_method_names = ['post']
-    template_name = 'addrole.html'
+    template_name = 'role/addrole.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -121,7 +121,7 @@ class AddRole(CommonViewMixin,TemplateView):
 #修改角色
 class ChangeRole(CommonViewMixin,DetailView):
     queryset = Role.role_list()
-    template_name = 'addrole.html'
+    template_name = 'role/addrole.html'
     context_object_name = 'role_detail'
     pk_url_kwarg = 'role_id'
 
@@ -261,7 +261,7 @@ class DeleteRole(CommonViewMixin,TemplateView):
 #查看角色
 class ReadRole(CommonViewMixin,DetailView):
     queryset = Role.role_list()
-    template_name = 'readrole.html'
+    template_name = 'role/readrole.html'
     context_object_name = 'role_detail'
     pk_url_kwarg = 'role_id'
 

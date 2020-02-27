@@ -22,12 +22,12 @@ class CommonViewMixin:
 
 #首页
 class Index(CommonViewMixin, TemplateView):
-    template_name = "index.html"
+    template_name = "index/index.html"
 
 
 #修改用户信息
 class UserInfo(CommonViewMixin, TemplateView):
-    template_name = "userinfo.html"
+    template_name = "index/userinfo.html"
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -92,14 +92,14 @@ class UserInfo(CommonViewMixin, TemplateView):
                 'errors': errors,
                 'success':success
             })
-            return render(request, "userinfo.html", context=context)
+            return render(request, "index/userinfo.html", context=context)
         else:
             return redirect('login')
 
 
 #密码修改
 class PasswordChange(CommonViewMixin, TemplateView):
-    template_name = 'pswdcg.html'
+    template_name = 'index/pswdcg.html'
 
     def get(self, request, *args, **kwargs):
         response = super().get(request, *args, **kwargs)
@@ -134,6 +134,6 @@ class PasswordChange(CommonViewMixin, TemplateView):
                 'errors': errors,
                 'success':success,
             })
-            return render(request, "pswdcg.html", context=context)
+            return render(request, "index/pswdcg.html", context=context)
         else:
             return redirect('login')

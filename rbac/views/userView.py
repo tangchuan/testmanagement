@@ -15,7 +15,7 @@ class Users(CommonViewMixin, ListView):
     queryset = User.user_list()
     paginate_by = 10
     context_object_name = 'user_list'
-    template_name = 'user.html'
+    template_name = 'user/user.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -53,7 +53,7 @@ class Users(CommonViewMixin, ListView):
 
 #新增用户
 class AddUser(CommonViewMixin,TemplateView):
-    template_name = 'adduser.html'
+    template_name = 'user/adduser.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -92,7 +92,7 @@ class AddUser(CommonViewMixin,TemplateView):
                 context.update({
                     'errors': errors,
                 })
-                return render(request, "adduser.html", context=context)
+                return render(request, "user/adduser.html", context=context)
             else:
                 password = make_password('123456')
                 new_user=User.objects.create(
@@ -114,7 +114,7 @@ class AddUser(CommonViewMixin,TemplateView):
 #修改用户
 class ChangeUser(CommonViewMixin,DetailView):
     queryset = User.user_list()
-    template_name = 'adduser.html'
+    template_name = 'user/adduser.html'
     context_object_name = 'user_detail'
     pk_url_kwarg = 'user_id'
 
@@ -160,7 +160,7 @@ class ChangeUser(CommonViewMixin,DetailView):
                 context.update({
                     'errors': errors,
                 })
-                return render(request, "adduser.html", context=context)
+                return render(request, "user/adduser.html", context=context)
             else:
                 chang_user.update(email=email,realname=realname,phone=phone)
                 chang_user.first().role.clear()
@@ -223,7 +223,7 @@ class ResetUser(CommonViewMixin,TemplateView):
 #查看用户
 class ReadUser(CommonViewMixin,DetailView):
     queryset = User.user_list()
-    template_name = 'readuser.html'
+    template_name = 'user/readuser.html'
     context_object_name = 'user_detail'
     pk_url_kwarg = 'user_id'
 
